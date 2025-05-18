@@ -1,0 +1,636 @@
+Em mongoDB as collections são como as tabelas nos bancos relacionais e documents são os dados. 
+
+Comandos mongoDB
+
+Mostrar todos os bancos de dados:
+test> show  dbs
+admin        40.00 KiB
+config       72.00 KiB
+local        80.00 KiB
+servidor_A  616.00 KiB
+
+***************************************************************
+
+Criar um banco de dados(o banco só é criado de fato quando os dados são inseridos):
+
+test> use primeirobanco
+switched to db primeirobanco
+primeirobanco>
+
+***************************************************************
+
+Criando uma collection e inserindo o primeiro dado(documents):
+
+primeirobanco> db.primeiracollection.insertOne({nome: "Luis Carlos", idade: 33, hobbies: ["ler", "jogar", "correr", "programar"]})
+{
+  acknowledged: true,
+  insertedId: ObjectId('67b067d07e40a55de1cb0ce2')
+}
+
+***************************************************************
+
+Personalizando o id:
+
+test> show dbs
+admin           40.00 KiB
+alunos          40.00 KiB
+concessionaria  40.00 KiB
+config          72.00 KiB
+local           72.00 KiB
+mercado         56.00 KiB
+test> use mercado
+switched to db mercado
+mercado> db.produtos.insertOne({_id: "4587", nome: "Achocolatado Toddy (500g)", preço: 8.99, disponibilidade: "55"})
+{ acknowledged: true, insertedId: '4587' }
+mercado> db.produtos.findOne({_id: '4587'})
+{
+  _id: '4587',
+  nome: 'Achocolatado Toddy (500g)',
+  'preço': 8.99,
+  disponibilidade: '55'
+}
+
+***************************************************************
+
+Inserir múltiplos documents(dados) de uma vez:
+
+a)primeirobanco> db.quartacollection.insertMany([{nome: "Luis Cesar", salario: 2500}, {nome: "Paula Donattis", salario: 3000}, 
+{nome: "Renata Soarez", salario: 1800}, {nome: "Ricardo Alvez", salario: 3600}])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('67b19e617e40a55de1cb0ce9'),
+    '1': ObjectId('67b19e617e40a55de1cb0cea'),
+    '2': ObjectId('67b19e617e40a55de1cb0ceb'),
+    '3': ObjectId('67b19e617e40a55de1cb0cec')
+  }
+}
+
+b)test> use mercado
+switched to db mercado
+mercado> db.produtos.insertMany([{nome: "Spaghetti Adria nº 8 (500g)", preço: 3.99, disponibilidade: "disponível"}, {nome: 
+"Achocolatado Nescau (500g)", preço: 7.85, disponibilidade: "indisponível"}, {nome: "Coca Cola (2L)", preço: 9.00, disponibilidade: 
+"disponível"}, {nome: "Filé de frango(kg)", preço: 17.50, disponibilidade: "diponível"}, {nome: "Pão francês(50g)", preço: 0.85, 
+disponibilidade: "indisponível"}])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('6803696dc71879fd75cb0ce2'),
+    '1': ObjectId('6803696dc71879fd75cb0ce3'),
+    '2': ObjectId('6803696dc71879fd75cb0ce4'),
+    '3': ObjectId('6803696dc71879fd75cb0ce5'),
+    '4': ObjectId('6803696dc71879fd75cb0ce6')
+  }
+}
+
+c)mercado> use concessionaria
+switched to db concessionaria
+concessionaria> db.carros.insertMany([{_id: 4879, marca: "Volkswagen", modelo: "Gol GTi", ano_fabricacao: 1989, Kilometragem: "30 
+mil km"}, {_id: 8978, marca: "Honda", modelo: "Civic", ano_fabricacao: 2012, Kilometragem: "60 mil km"}, {_id: 7546, marca: 
+"Toyota", modelo: "Corolla Sedan", ano_fabricacao: 2010, Kilometragem: "72 mil km"}, {_id: 2389, marca: "Chevrolet", modelo: "Onix 
+Plus", ano_fabricacao: 2023 , Kilometragem: "45 mil km"}])
+{
+  acknowledged: true,
+  insertedIds: { '0': 4879, '1': 8978, '2': 7546, '3': 2389 }
+}
+
+***************************************************************
+
+Criando uma collection chamada provas:
+Criando 2 dados(documents) com os nomes dos alunos e um array chamado notas, com as notas das provas de cada aluno:
+
+concessionaria> use alunos
+switched to db alunos
+alunos> db.provas.insertOne({nome: "Luis Carlos", notas: [ 8.5 , 7, 8 ]})
+{
+  acknowledged: true,
+  insertedId: ObjectId('6803e0e1c71879fd75cb0ceb')
+}
+alunos> db.provas.insertOne({nome: "João Paulo", notas: [ 9 , 8.5, 10 ]})
+{
+  acknowledged: true,
+  insertedId: ObjectId('6803e0f4c71879fd75cb0cec')
+}
+
+Inserindo múltiplos alunos:
+alunos> db.provas.insertOne([{nome: "Luis Carlos", notas: [ 8.5 , 7, 8 ]}, {}, {}, {}])
+
+***************************************************************
+
+Encontrar um dado(documents) no banco:
+
+a)primeirobanco> db.primeiracollection.findOne({_id: ObjectId('67ad7ccb3caf60af36cb0ce2')})
+{
+  _id: ObjectId('67ad7ccb3caf60af36cb0ce2'),
+  nome: 'Luis Cesar',
+  idade: 42
+}
+
+b)mercado> db.produtos.findOne({_id: '4587'})
+{
+  _id: '4587',
+  nome: 'Achocolatado Toddy (500g)',
+  'preço': 8.99,
+  disponibilidade: '55'
+}
+
+c)booksData> db.livros.findOne({title: "MongoDB in Action"})
+{
+  _id: 17,
+  title: 'MongoDB in Action',
+  isbn: '1935182870',
+  pageCount: 0,
+  publishedDate: ISODate('2011-12-12T08:00:00.000Z'),
+  thumbnailUrl: 'https://s3.amazonaws.com/AKIAJC5RLADLUMVRPFDQ.book-thumb-images/banker.jpg',
+  shortDescription: 'MongoDB In Action is a comprehensive guide to MongoDB for application developers. The book begins by explaining 
+what makes MongoDB unique and describing its ideal use cases. A series of tutorials designed for MongoDB mastery then leads into 
+detailed examples for leveraging MongoDB in e-commerce, social networking, analytics, and other common applications.',
+  longDescription: `MongoDB is a document-oriented database that's highly scalable and delivers very high-performance, especially 
+with massive data sets that need to be spread across multiple servers. It blends the things you expect with any database   like 
+indexing, querying, and high availability   with powerful new features like easy horizontal scaling ("auto-sharding"), map/reduce 
+aggregation, and a flexible document data model to support dynamic schemas.    MongoDB In Action is a comprehensive guide to 
+MongoDB for application developers. The book begins by explaining what makes MongoDB unique and describing its ideal use cases. A 
+series of tutorials designed for MongoDB mastery then leads into detailed examples for leveraging MongoDB in e-commerce, social 
+networking, analytics, and other common applications.    Along the way, all of MongoDB's major features are covered, 
+including:        * Indexes and explain plans for efficient queries      * Atomic operations for managing simple data structures 
+and manipulating complex, rich documents      * GridFS for storing and managing large binary objects (images, videos, etc.) in 
+MongoDB      * Map-reduce for custom aggregations and reporting      * Master-slave replication and replica sets for automated 
+failover      * Auto-sharding for automated horizontal scaling    The handy reference section on schema design patterns will help 
+ease the transition from the relational data model of SQL to MongoDB's document-based data model. The numerous, detailed examples 
+are implemented in Ruby and include comprehensive explanations.    MongoDB has been gaining traction in the developer community 
+for its speed, flexibility, scalability, and ease of use. With production deployments that include SourceForge, Foursquare, and 
+Shutterfly, MongoDB is proving to be a robust and reliable database system that keeps developers happy. Covering everything from 
+installation to application design to deployment, MongoDB In Action is written for the application developer who wants to take 
+advantage of MongoDB and get up and running quickly.`,
+  status: 'PUBLISH',
+  authors: [ 'Kyle Banker' ],
+  categories: [ 'Next Generation Databases' ]
+}
+
+***************************************************************
+
+Encontrar mais de um dado(documents) no banco:
+
+a)primeirobanco> db.primeiracollection.find()
+[
+  {
+    _id: ObjectId('67ad7ccb3caf60af36cb0ce2'),
+    nome: 'Luis Cesar',
+    idade: 42
+  },
+  {
+    _id: ObjectId('67ad85713caf60af36cb0ce3'),
+    nome: 'Ana Paula',
+    idade: 24,
+    celular: '1199657-8956'
+  }
+]
+
+b)aluno> db.provas.find()
+[
+  {
+    _id: ObjectId('67ca8d568a13d0d43ecb0ce2'),
+    nome: 'Luis Carlos',
+    notas: [ 8.5, 7, 8 ]
+  },
+  {
+    _id: ObjectId('67ca8fb28a13d0d43ecb0ce3'),
+    nome: 'João Paulo',
+    notas: [ 9, 8.5, 10 ]
+  }
+]
+
+c)mercado> db.produtos.find()
+[
+  {
+    _id: ObjectId('67ccc20d57f69e9598cb0ce2'),
+    nome: 'Spaghetti Adria nº 8 (500g)',
+    'preço': 3.99,
+    disponibilidade: 'disponível'
+  },
+  {
+    _id: ObjectId('67ccc20d57f69e9598cb0ce3'),
+    nome: 'Achocolatado Nescau (500g)',
+    'preço': 7.85,
+    disponibilidade: 'indisponível'
+  },
+  {
+    _id: ObjectId('67ccc20d57f69e9598cb0ce4'),
+    nome: 'Coca Cola (2L)',
+    'preço': 9,
+    disponibilidade: 'disponível'
+  },
+  {
+    _id: ObjectId('67ccc20d57f69e9598cb0ce5'),
+    nome: 'Filé de frango(kg)',
+    'preço': 17.5,
+    disponibilidade: 'diponível'
+  },
+  {
+    _id: ObjectId('67ccc20d57f69e9598cb0ce6'),
+    nome: 'Pão francês(50g)',
+    'preço': 0.85,
+    disponibilidade: 'indisponível'
+  }
+]
+
+d)dadosDeCarros> db.carros.find().pretty()
+[
+  {
+    _id: ObjectId('67cce27357f69e9598cb0ceb'),
+    id: 4879,
+    marca: 'Volkswagen',
+    modelo: 'Gol GTi',
+    'ano de fabricação': 1989,
+    Kilometragem_rodada: '30 mil km'
+  },
+  {
+    _id: ObjectId('67cce27357f69e9598cb0cec'),
+    id: 8978,
+    marca: 'Honda',
+    modelo: 'Civic',
+    'ano de fabricação': 2012,
+    Kilometragem_rodada: '60 mil km'
+  },
+  {
+    _id: ObjectId('67cce27357f69e9598cb0ced'),
+    id: 7546,
+    marca: 'Toyota',
+    modelo: 'Corolla Sedan',
+    'ano de fabricação': 2010,
+    Kilometragem_rodada: '72 mil km'
+  },
+  {
+    _id: ObjectId('67cce27357f69e9598cb0cee'),
+    id: 2389,
+    marca: 'Chevrolet',
+    modelo: 'Onix Plus',
+    'ano de fabricação': 2023,
+    Kilometragem_rodada: '45 mil km'
+  }
+]
+
+***************************************************************
+
+Encontrar todos os dados que tenha os mesmos valores:
+
+a)primeirobanco> db.primeiracollection.find({"idade": 42})
+[
+  {
+    _id: ObjectId('67ad7ccb3caf60af36cb0ce2'),
+    nome: 'Luis Cesar',
+    idade: 42
+  }
+]
+
+b)booksData> db.livros.find({authors: "Jason R. Weiss"})
+[
+  {
+    _id: 20,
+    title: 'Taming Jaguar',
+    isbn: '1884777686',
+    pageCount: 362,
+    publishedDate: ISODate('2000-07-01T07:00:00.000Z'),
+    thumbnailUrl: 'https://s3.amazonaws.com/AKIAJC5RLADLUMVRPFDQ.book-thumb-images/barlotta3.jpg',
+    longDescription: "Taming Jaguar is part of the PowerBuilder Developer's series, which includes Distributed Application 
+Development with PowerBuilder 6 and Jaguar Development with PowerBuilder 7.    An application server is the heart of your 
+enterprise computing architecture, centralizing your web content, business logic, and access to your data and legacy 
+applications. Sybase's application server, Jaguar CTS, delivers performance, scalability, and flexibility running CORBA , COM, 
+Java/EJB, C++, and PowerBuilder components.    If you are looking to adopt Jaguar in your enterprise, look no further. Taming 
+Jaguar shows you how to solve the real-world problems of installing, trouble-shooting, designing, developing, and maintaining a 
+Jaguar application. Topical chapters are organized in a Q & A format making it easy for you to quickly find the solution to your 
+problem. They also provide foundational and background information as well as detailed technical how-tos.    Although designed 
+so you can find your problems easily, this book is meant to be read cover-to-cover with each chapter discussing its topic 
+exhaustively.    What's inside:    J2EE development  Java Servlets  Jaguar administration & code balancing  EJBs  Web 
+development with PowerDynamo  Advanced component design ",
+    status: 'PUBLISH',
+    authors: [ 'Michael J. Barlotta', 'Jason R. Weiss' ],
+    categories: [ 'PowerBuilder' ]
+  }
+]
+
+***************************************************************
+
+O comando use serve para criar e trocar de banco de dados:
+
+primeirobanco> use servidor_A
+switched to db servidor_A
+servidor_A>
+
+***************************************************************
+
+O comando db serve para mostrar o banco atual:
+
+servidor_A> db
+servidor_A
+
+***************************************************************
+
+A função pretty() apresenta os dados com uma formatação melhor:
+
+primeirobanco> db.primeiracollection.find().pretty()
+[
+  {
+    _id: ObjectId('67ad7ccb3caf60af36cb0ce2'),
+    nome: 'Luis Cesar',
+    idade: 42
+  },
+  {
+    _id: ObjectId('67ad85713caf60af36cb0ce3'),
+    nome: 'Ana Paula',
+    idade: 24,
+    celular: '1199657-8956'
+  },
+  {
+    _id: ObjectId('67b067d07e40a55de1cb0ce2'),
+    nome: 'Luis Carlos',
+    idade: 33,
+    hobbies: [ 'ler', 'jogar', 'correr', 'programar' ]
+  }
+]
+
+***************************************************************
+
+Criação de collections de forma implicita:
+Quando eu insiro limitações eu tenho que colocar o atributo capped. 
+
+primeirobanco> db.createCollection("segundacollection", { capped: true, size: 1000, max: 3 })
+{ ok: 1 }
+
+***************************************************************
+
+Exibir todas as collections:
+
+primeirobanco> show collections
+primeiracollection
+segundacollection
+
+***************************************************************
+
+Atualizar banco de dados
+
+Atualizar uma linha:
+a)mercado> db.produtos.updateOne({ nome: "Spaghetti Adria nº 8 (500g)" }, { $set: { disponibilidade: 98 } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+b)mercado> db.produtos.updateOne({ nome: "Achocolatado Nescau (500g)" }, { $set: { disponibilidade: 57, preço: 7.35 } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+c)mercado> db.produtos.updateOne({ nome: "Coca Cola (2L)" }, { $set: { disponibilidade: 120, preço: 7.35 } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+d)mercado> db.produtos.updateOne({ nome: "Filé de frango(kg)" }, { $set: {preço: 16.00 } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+e)mercado> db.produtos.updateOne({ nome: "Pão francês(50g)" }, { $set: { preço: 0.80 } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+***************************************************************
+
+Podemos remover collections quando elas não forem mais necessárias ou se errarmos o nome, por exemplo;
+test> show dbs
+admin           40.00 KiB
+config          48.00 KiB
+local           80.00 KiB
+primeirobanco  200.00 KiB
+servidor_A     616.00 KiB
+test> use primeirobanco
+switched to db primeirobanco
+primeirobanco> show collections
+primeiracollection
+quartacollection
+segundacollection
+terceiracollection
+primeirobanco> db.segundacollection.drop()
+true
+
+***************************************************************
+
+Removendo banco de dados:
+Todos os dados e collections serão excluídos.
+test> show dbs
+admin           40.00 KiB
+config          48.00 KiB
+local           80.00 KiB
+primeirobanco  200.00 KiB
+servidor_A     616.00 KiB
+test> use primeirobanco
+switched to db primeirobanco
+test> db.dropDatabase()
+{"dropped" : "primeirobanco" , "ok" : 1}
+
+***************************************************************
+
+Importar banco de dados em JSON:
+PS C:\users\cesar\onedrive\documentos\documentos b\mongodb\curso_mongodb-main\2_gerenciamento_de_dbs> mongoimport books.json -d 
+booksData -c livros
+2025-02-19T03:57:12.419-0300    connected to: mongodb://localhost/
+2025-02-19T03:57:13.177-0300    431 document(s) imported successfully. 0 document(s) failed to import.
+test> show dbs
+admin           40.00 KiB
+booksData      284.00 KiB
+config          72.00 KiB
+local           80.00 KiB
+primeirobanco  160.00 KiB
+servidor_A     616.00 KiB
+
+***************************************************************
+
+Exportar banco de dados em JSON:
+PS C:\Users\cesar\onedrive\documentos\documentos b\mongodb> mongoexport -c livros -d booksData -o booksData.json
+2025-02-19T10:51:11.873-0300    connected to: mongodb://localhost/
+2025-02-19T10:51:11.980-0300    exported 431 records
+
+-d: database
+-c: collection
+-o: output
+
+***************************************************************
+
+Importar dados do mongodump (muitas collections):
+Para importar os arquivos gerados do mongodump, utilizamos o mongorestore;
+O comando é o seguinte: mongorestore <diretorio>
+PS C:\Users\cesar\onedrive\documentos\documentos b\mongodb> mongorestore primeirobanco
+2025-02-19T22:35:23.321-0300    preparing collections to restore from
+2025-02-19T22:35:23.345-0300    reading metadata for primeirobanco.primeiracollection from 
+primeirobanco\primeirobanco\primeiracollection.metadata.json
+2025-02-19T22:35:23.345-0300    reading metadata for primeirobanco.quartacollection from 
+primeirobanco\primeirobanco\quartacollection.metadata.json
+2025-02-19T22:35:23.346-0300    reading metadata for primeirobanco.terceiracollection from 
+primeirobanco\primeirobanco\terceiracollection.metadata.json
+2025-02-19T22:35:23.398-0300    restoring primeirobanco.quartacollection from primeirobanco\primeirobanco\quartacollection.bson
+2025-02-19T22:35:23.408-0300    restoring primeirobanco.primeiracollection from primeirobanco\primeirobanco\primeiracollection.bson
+2025-02-19T22:35:23.413-0300    finished restoring primeirobanco.quartacollection (4 documents, 0 failures)
+2025-02-19T22:35:23.416-0300    restoring primeirobanco.terceiracollection from primeirobanco\primeirobanco\terceiracollection.bson
+2025-02-19T22:35:23.427-0300    finished restoring primeirobanco.primeiracollection (3 documents, 0 failures)
+2025-02-19T22:35:23.451-0300    finished restoring primeirobanco.terceiracollection (1 document, 0 failures)
+2025-02-19T22:35:23.451-0300    no indexes to restore for collection primeirobanco.primeiracollection
+2025-02-19T22:35:23.451-0300    no indexes to restore for collection primeirobanco.quartacollection
+2025-02-19T22:35:23.451-0300    no indexes to restore for collection primeirobanco.terceiracollection
+2025-02-19T22:35:23.451-0300    8 document(s) restored successfully. 0 document(s) failed to restore.
+
+***************************************************************
+
+Exportar muitas collections:
+Quando o banco possui mais de uma collection a melhor opção de exportação é o mongodump;
+Utilizamos assim: mongodump -d nome-banco-que-será-exportado -o nome-da-database-que-será-salva
+Onde o -o(output) criará uma pasta com o nome do diretóio informado no local que você escolheu para salvar e com os arquivos de 
+cada collection;
+PS C:\Users\cesar\onedrive\documentos\documentos b\mongodb> mongodump -d primeirobanco -o primeirobanco
+2025-02-19T22:09:50.626-0300    writing primeirobanco.quartacollection to primeirobanco\primeirobanco\quartacollection.bson
+2025-02-19T22:09:50.659-0300    writing primeirobanco.primeiracollection to primeirobanco\primeirobanco\primeiracollection.bson
+2025-02-19T22:09:50.660-0300    writing primeirobanco.terceiracollection to primeirobanco\primeirobanco\terceiracollection.bson
+2025-02-19T22:09:50.666-0300    done dumping primeirobanco.quartacollection (4 documents)
+2025-02-19T22:09:50.671-0300    done dumping primeirobanco.primeiracollection (3 documents)
+2025-02-19T22:09:50.675-0300    done dumping primeirobanco.terceiracollection (1 document)
+
+***************************************************************
+
+Podemos checar algumas informações como, quantidade de consultas rodando, consumo de rede e outros dados;
+Teremos uma aba do terminal ocupada, atualizando a todo segundo e trazendo informações em tempo real;
+PS C:\Users\cesar> mongostat
+insert query update delete getmore command dirty used flushes vsize   res qrw arw net_in net_out conn                time
+    *0    *0     *0     *0       0     0|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   111b   83.7k    3 Feb 20 17:07:26.409
+    *0    *0     *0     *0       0     0|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   111b   83.6k    3 Feb 20 17:07:27.411
+    *0    *0     *0     *0       0     1|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   112b   84.3k    3 Feb 20 17:07:28.406
+    *0    *0     *0     *0       0     1|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   112b   84.2k    3 Feb 20 17:07:29.402
+    *0    *0     *0     *0       0     0|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   110b   83.0k    3 Feb 20 17:07:30.411
+    *0    *0     *0     *0       0     0|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   111b   83.6k    3 Feb 20 17:07:31.413
+    *0    *0     *0     *0       0     1|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   112b   84.2k    3 Feb 20 17:07:32.409
+    *0    *0     *0     *0       0     0|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   111b   83.6k    3 Feb 20 17:07:33.412
+    *0    *0     *0     *0       0     1|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   112b   84.0k    3 Feb 20 17:07:34.410
+    *0    *0     *0     *0       0     2|0  0.0% 0.0%       0 4.65G 35.0M 0|0 0|0   321b   84.4k    3 Feb 20 17:07:35.410
+
+***************************************************************
+
+O Write Concern é uma configuração que pode ser inserida no
+insertMany;
+a. Podemos limitar o tempo de execução da inserção;
+b. Retornando um erro de time out caso exceda o mesmo;
+c. Exemplo: {w: “majority”, wtimeout: 100}
+d. A inserção tem 100ms para ser executada;
+e. Só é possível testar com muitos dados.
+
+mercado> db.produtos.insertMany([{_id: "4433", nome: "Farinha de Trigo Dona Benta (500g)", preço: 4.99, disponibilidade: "30"}, 
+{_id: "4422", nome: "Fanta Uva (2L)", preço: 7.99, disponibilidade: "70"}], {w: 'majority', wtimeout: 100})
+{ acknowledged: true, insertedIds: { '0': '4433', '1': '4422' } }
+mercado> db.produtos.findOne({_id: '4422'})
+{
+  _id: '4422',
+  nome: 'Fanta Uva (2L)',
+  'preço': 7.99,
+  disponibilidade: '70'
+}
+
+***************************************************************
+
+Forma simples de remover vários bancos (Criar um snippet)
+No VS Code abra a pasta em que está o banco de dados, acesse o mongoshell(com o comando mongosh) e cole seguinte script no terminal:
+test> Mongo().getDBNames().forEach(function(db){
+...     if(['admin', 'config', 'local'].indexOf(db) < 0){
+...         Mongo().getDB(db).dropDatabase();
+...     }
+... });
+
+Observação: O mongoDB precisa ter sido iniciado no PC.
+
+***************************************************************
+
+A principal diferença entre implementar um CRUD com MySQL ou MongoDB está no modelo de dados e na forma como as consultas são 
+estruturadas:
+
+1. Modelo de Dados
+
+MySQL (Banco Relacional):
+-Usa tabelas com colunas e linhas.
+-Dados estruturados com chaves primárias e estrangeiras.
+-Relacionamentos entre entidades são feitos com JOINs.
+
+Exemplo:
+
+CREATE TABLE users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255),
+  email VARCHAR(255) UNIQUE,
+  age INT
+);
+
+MongoDB (NoSQL, Banco Não Relacional e Orientado a Documentos):
+-Usa coleções que armazenam documents(dados) no formato JSON (objetos).
+-Dados sem estrutura fixa (schema flexível).
+-Relacionamentos são feitos embutindo documentos ou com referências.
+
+Exemplo:
+
+{
+  "_id": ObjectId("123abc"),
+  "name": "João",
+  "email": "joao@email.com",
+  "age": 30
+}
+
+2. Operações CRUD(create, read, update e delete):
+
+Create (Inserir dados)
+MySQL: INSERT INTO users (name, email, age) VALUES ('João', 'joao@email.com', 30);
+MongoDB: db.users.insertOne({ name: "João", email: "joao@email.com", age: 30 });
+
+Read (Consultar dados)
+MySQL: SELECT * FROM users WHERE age > 25;
+MongoDB: db.users.find({ age: { $gt: 25 } }); // $gt - great that 
+
+Update (Atualizar dados)
+MySQL: UPDATE users SET age = 31 WHERE email = 'joao@email.com';
+MongoDB: db.users.updateOne({ email: "joao@email.com" }, { $set: { age: 31 } });
+
+Delete (Remover dados)
+MySQL: DELETE FROM users WHERE email = 'joao@email.com';
+MongoDB: db.users.deleteOne({ email: "joao@email.com" });
+
+3. Quando usar cada um?
+
+Use MySQL se:
+Precisar de relacionamentos fortes entre dados.
+Tem dados bem estruturados e não mudam com frequência.
+Precisa de transações ACID (Atomicidade, Consistência, Isolamento, Durabilidade).
+
+Use MongoDB se:
+Precisar de escalabilidade horizontal (muitas conexões simultâneas).
+Os dados são semiestruturados e podem mudar de formato com o tempo.
+Alta velocidade de leitura/escrita sem depender de JOINs.
+
+4. Conclusão
+MySQL é melhor para sistemas estruturados (ERP, sistemas bancários).
+MongoDB é melhor para grandes volumes de dados não estruturados (logs, big data, aplicações web escaláveis).
+Se seu sistema envolve muitas consultas e grandes volumes de dados, o MongoDB pode ser mais eficiente. Se precisar de integridade e 
+estrutura rígida, o MySQL é melhor.

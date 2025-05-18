@@ -1,0 +1,40 @@
+1.	❌ Erro ao conectar no MongoDB: localhost:27017: [Errno 111] Connection refused
+🧠 O que isso significa?
+O pyService (rodando dentro de um container Docker) tentou acessar localhost:27017.
+Mas dentro de um container, localhost não é o host da sua máquina física.
+localhost dentro do container aponta para o próprio container — e como o MongoDB não está rodando ali dentro, ele não vai encontrar
+nada nesse endereço.
+Resultado: Connection refused (ninguém está ouvindo na porta 27017 dentro do container).
+
+Como resolver?
+
+Substitua:
+MONGO_URI = "mongodb://localhost:27017"
+Por algo como:
+MONGO_URI = "mongodb://host.docker.internal:27017"
+
+🧭 Por que host.docker.internal?
+Essa é uma forma padrão do Docker (no Windows/macOS) se comunicar com o host real da máquina.
+Então, quando você diz:
+mongodb://host.docker.internal:27017
+Você está dizendo:
+“Ei container, fale com o MongoDB que está rodando no host da minha máquina!”
+
+✏️ Resumo:
+Dentro de um container, localhost é o próprio container.
+Para acessar algo rodando na máquina física (host) de fora do container:
+Use host.docker.internal (no Windows/macOS).
+Use o IP da máquina, se preferir.
+O erro Connection refused indica que não tem ninguém escutando naquela porta/endereço.
+O erro Name or service not known indica que o nome do host não foi reconhecido (como quando você tenta usar "mongodb" sem esse nome
+estar definido no Docker Compose ou DNS).
+
+****************************************************************
+
+2.	❌ Erro ao conectar no MongoDB: mongodb:27017: [Errno -2] Name or service not known
+Ou seja, o nome mongodb não está sendo resolvido dentro do container do pyService, o que indica que:
+🔍 Causas possíveis
+O nome mongodb não corresponde ao nome real do serviço no docker-compose.yml.
+Os containers não estão na mesma rede Docker.
+Você está rodando o MongoDB fora do Docker (ex: local na máquina), mas colocou mongodb:27017 mesmo assim.
+
