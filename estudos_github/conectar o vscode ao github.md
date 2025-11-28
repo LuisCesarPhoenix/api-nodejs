@@ -382,3 +382,59 @@ git remote set-head origin -a
 ## SINTAXE BÁSICA DE FORMATAÇÃO MARKDOWN(.md)
 
 https://www.markdownguide.org/basic-syntax/
+
+```text
+****************************************************************************************************************************
+```
+
+## COMO DESFAZER UM COMMIT
+
+O que você vai fazer depende se você já enviou (push) ou não para o GitHub.
+
+Segue abaixo os dois casos:
+
+### CASO 1 — Você NÃO deu push ainda
+
+(Este é o mais simples)
+
+Você pode voltar no tempo e desfazer aquele commit gigante em vários commits separados.
+
+A) Voltar 1 commit, mantendo o código na sua máquina:
+- git reset HEAD~1
+B) Voltar 2 commits, mantendo o código na sua máquina:
+- git reset HEAD~2
+
+Isso remove o commit, mas mantém todas as alterações no working directory, como se você nunca tivesse commitado.
+
+Agora é só fazer seus commits separados:
+- git add arquivo1
+- git commit -m "Commit 1"
+- git add arquivo2
+- git commit -m "Commit 2"
+- E assim por diante.
+
+### CASO 2 — Você JÁ deu push para o GitHub
+
+Você ainda pode desfazer, mas é mais delicado.
+
+Se ninguém mais usa esse branch:
+- git reset --soft HEAD~1
+- git push --force
+
+IMPORTANTE:
+--force sobrescreve o histórico remoto.
+Use apenas se for seu branch pessoal.
+
+Qual tipo de "reset" usar?
+1) --soft	
+- Apaga o commit, mas mantém tudo staged
+2) sem opções	
+- Apaga o commit, deixa tudo unstaged
+3) --hard	
+- Apaga o commit e o código ← NÃO USE aqui
+
+Para separar commits, use sempre soft ou normal (sem opção).
+
+```text
+****************************************************************************************************************************
+```
