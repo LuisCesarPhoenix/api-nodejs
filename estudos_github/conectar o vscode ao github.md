@@ -426,11 +426,11 @@ IMPORTANTE:
 Use apenas se for seu branch pessoal.
 
 Qual tipo de "reset" usar?
-1) --soft	
+1) --soft
 - Apaga o commit, mas mantém tudo staged
-2) sem opções	
+2) sem opções
 - Apaga o commit, deixa tudo unstaged
-3) --hard	
+3) --hard
 - Apaga o commit e o código ← NÃO USE aqui
 
 Para separar commits, use sempre soft ou normal (sem opção).
